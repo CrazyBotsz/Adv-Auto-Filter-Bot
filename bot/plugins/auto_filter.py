@@ -10,16 +10,13 @@ import pyrogram
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors import UserAlreadyParticipant, FloodWait
-from pyrogram import Client, filters
+
 
 from bot.bot import Bot
 from bot.translation import Translation
-from bot.plugins.database import ( # pylint: disable=import-error
-    add_connections,
-    find_connections,
-    delete_connections
-    )
+from bot.plugins.database import Database
 
+db = Database () 
 result = []
 
 @Client.on_message(filters.command("connect") & filters.group)
@@ -38,7 +35,7 @@ async def connect(bot: Bot, update):
     
     channel_id = int(text[1])
     
-    conn_hist = find_connections(group_id)
+    conn_hist = await db.find_connections(group_id)
     
     if conn_hist: #TODO: Better Way!? 
 
@@ -79,7 +76,8 @@ async def connect(bot: Bot, update):
     # Export Invite Link For Userbot
     try:
         join_link = await bot.export_chat_invite_link(channel_id)
-    except:
+    except Exception as e:
+        print(e) 
         await bot.send_message(
             chat_id=group_id,
             text=f"Make Sure I'm Admin In <code>{channel_id}</code> And Have Permission - `Invite Users via Link`",
@@ -115,12 +113,13 @@ async def connect(bot: Bot, update):
         )
         return
     
-    responce = add_connections(group_id, channel1, channel2, channel3)
+    chat_name = await bot.get_chat(channel_id) 
+    responce = await db.add_connections(group_id, channel1, channel2, channel3)
 
     if responce:
         await bot.send_message(
             chat_id=group_id,
-            text=f"Sucessfully Connected To <code>{channel_id}</code>",
+            text=f"Sucessfully Connected To <code>{chat_name.title}</code>",
             parse_mode="html",
             reply_to_message_id=update.message_id
         )
@@ -150,7 +149,7 @@ async def disconnect(bot, update):
     
     channel_id = int(text[1])
     
-    conn_hist = find_connections(group_id)
+    conn_hist = await db.find_connections(group_id)
     
     if conn_hist:
         channel1 = int(conn_hist["channel_ids"]["channel1"]) if conn_hist["channel_ids"]["channel1"] else None
@@ -188,17 +187,19 @@ async def disconnect(bot, update):
     except:
         pass
     
+    chat_name = await bot.get_chat(channel_id)
+    
     try:
         await bot.leave_chat(channel_id)
     except:
         pass
     
-    responce = add_connections(group_id, channel1, channel2, channel3)
+    responce = await db.add_connections(group_id, channel1, channel2, channel3)
 
     if responce:
         await bot.send_message(
             chat_id=group_id,
-            text=f"Sucessfully Disconnected From <code>{channel_id}</code>",
+            text=f"Sucessfully Disconnected From <code>{chat_name.title}</code>",
             parse_mode="html", 
             reply_to_message_id=update.message_id
         )
@@ -219,13 +220,14 @@ async def delall(bot, update):
 
     x = await bot.get_chat_member(group_id, update.from_user.id)
     
-    if x.status == "owner":
+    if x.status == "creator":
         pass
     else:
+        print(x.status) 
         return
-    
-    conn_hist = find_connections(group_id)
-    
+    print("Ok") 
+    conn_hist = await db.find_connections(group_id)
+    print(conn_hist) 
     if conn_hist:
         channel1 = int(conn_hist["channel_ids"]["channel1"]) if conn_hist["channel_ids"]["channel1"] else None
         channel2 = int(conn_hist["channel_ids"]["channel2"]) if conn_hist["channel_ids"]["channel2"] else None
@@ -246,7 +248,7 @@ async def delall(bot, update):
         except:
             pass
     
-    responce = delete_connections(group_id)
+    responce = await db.delete_connections(group_id)
     
     if responce:
         await bot.send_message(
@@ -272,7 +274,7 @@ async def auto_filter (bot, update):
     
     results = []
 
-    conn_hist = find_connections(group_id)
+    conn_hist = await db.find_connections(group_id)
     
     if conn_hist: # TODO: Better Way!? 😕
         channel1 = int(conn_hist["channel_ids"]["channel1"]) if conn_hist["channel_ids"]["channel1"] else None
@@ -333,7 +335,7 @@ async def auto_filter (bot, update):
         result += [results[i * 30 :(i + 1) * 30 ] for i in range((len(results) + 30 - 1) // 30 )]
         
         if len(results) >30:
-            result[0].append([InlineKeyboardButton("Next", callback_data=f"0 | {update.from_user.id} | next_btn")])
+            result[0].append([InlineKeyboardButton("Next ⏩", callback_data=f"0 | {update.from_user.id} | next_btn")])
 
         reply_markup = InlineKeyboardMarkup(result[0])
 
@@ -433,7 +435,7 @@ async def cb_handler(bot, query:CallbackQuery, group=1):
     
         if int(index_val) == (len(result) -1) or int(index_val) == 10: # Max 10 Page
             temp_results.append([
-                InlineKeyboardButton("Back", callback_data=f"{index_val} | {query.from_user.id} | back_btn")
+                InlineKeyboardButton("⏪ Back", callback_data=f"{index_val} | {query.from_user.id} | back_btn")
             ])
     
         elif int(index_val) == 0:
@@ -441,8 +443,8 @@ async def cb_handler(bot, query:CallbackQuery, group=1):
     
         else:
             temp_results.append([
-                InlineKeyboardButton("Back", callback_data=f"{index_val} | {query.from_user.id} | back_btn"),
-                InlineKeyboardButton("Next", callback_data=f"{index_val} | {query.from_user.id} | next_btn")
+                InlineKeyboardButton("⏪ Back", callback_data=f"{index_val} | {query.from_user.id} | back_btn"),
+                InlineKeyboardButton("Next ⏩", callback_data=f"{index_val} | {query.from_user.id} | next_btn")
             ])
     
         reply_markup = InlineKeyboardMarkup(temp_results)
