@@ -10,7 +10,7 @@ import pyrogram
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors import UserAlreadyParticipant, FloodWait
-from pyrogram import Client, filters
+
 
 from bot.bot import Bot
 from bot.translation import Translation
