@@ -351,58 +351,58 @@ async def auto_filter (bot, update):
 async def cb_handler(bot, query:CallbackQuery, group=1):
     cb_data = query.data
     
-    if cb_data == "start":
-        buttons = [[
-            InlineKeyboardButton('My Dev 👨‍🔬', url='https://t.me/AlbertEinstein_TG'),
-            InlineKeyboardButton('Source Code 🧾', url ='https://github.com/AlbertEinsteinTG/Adv-Auto-Filter-Bot')
-        ],[
-            InlineKeyboardButton('Support 🛠', url='https://t.me/CrazyBotszGrp')
-        ],[
-            InlineKeyboardButton('Help ⚙', callback_data="help")
-        ]]
+   # if cb_data == "start":
+       # buttons = [[
+           # InlineKeyboardButton('My Dev 👨‍🔬', url='https://t.me/AlbertEinstein_TG'),
+           # InlineKeyboardButton('Source Code 🧾', url ='https://github.com/AlbertEinsteinTG/Adv-Auto-Filter-Bot')
+       # ],[
+          #  InlineKeyboardButton('Support 🛠', url='https://t.me/CrazyBotszGrp')
+       # ],[
+           # InlineKeyboardButton('Help ⚙', callback_data="help")
+       # ]]
     
-        reply_markup = InlineKeyboardMarkup(buttons)
+       # reply_markup = InlineKeyboardMarkup(buttons)
         
-        await query.message.edit_text(
-            Translation.START_TEXT.format(query.from_user.mention),
-            reply_markup=reply_markup,
-            parse_mode="html",
-            disable_web_page_preview=True
-        )
+       # await query.message.edit_text(
+          #  Translation.START_TEXT.format(query.from_user.mention),
+          #  reply_markup=reply_markup,
+          #  parse_mode="html",
+          #  disable_web_page_preview=True
+       # )
     
-    elif cb_data == "help":
-        buttons = [[
-            InlineKeyboardButton('Home ⚡', callback_data='start'),
-            InlineKeyboardButton('About 🚩', callback_data='about')
-        ],[
-            InlineKeyboardButton('Close 🔐', callback_data='close')
-        ]]
+   # elif cb_data == "help":
+      #  buttons = [[
+           # InlineKeyboardButton('Home ⚡', callback_data='start'),
+          #  InlineKeyboardButton('About 🚩', callback_data='about')
+       # ],[
+          #  InlineKeyboardButton('Close 🔐', callback_data='close')
+       # ]]
     
-        reply_markup = InlineKeyboardMarkup(buttons)
+        #reply_markup = InlineKeyboardMarkup(buttons)
         
-        await query.message.edit_text(
-            Translation.HELP_TEXT,
-            reply_markup=reply_markup,
-            parse_mode="html",
-            disable_web_page_preview=True
-        )
+       # await query.message.edit_text(
+           # Translation.HELP_TEXT,
+          #  reply_markup=reply_markup,
+           # parse_mode="html",
+          #  disable_web_page_preview=True
+       # )
     
-    elif cb_data == "about": 
-        buttons = [[
-            InlineKeyboardButton('Home ⚡', callback_data='start'),
-            InlineKeyboardButton('Close 🔐', callback_data='close')
-        ]]
+   # elif cb_data == "about": 
+       # buttons = [[
+          #  InlineKeyboardButton('Home ⚡', callback_data='start'),
+           # InlineKeyboardButton('Close 🔐', callback_data='close')
+       # ]]
         
-        reply_markup = InlineKeyboardMarkup(buttons)
+       # reply_markup = InlineKeyboardMarkup(buttons)
         
-        await query.message.edit_text(
-            Translation.ABOUT_TEXT,
-            reply_markup=reply_markup,
-            parse_mode="html",
-            disable_web_page_preview=True
-        )
+        #await query.message.edit_text(
+           # Translation.ABOUT_TEXT,
+           # reply_markup=reply_markup,
+          #  parse_mode="html",
+           # disable_web_page_preview=True
+       # )
     
-    elif cb_data == "close":
+    if cb_data == "close":
         await query.message.delete()
 
 
